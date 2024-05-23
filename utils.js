@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const jsonFileName = 'norrisDb.json';
+const chuckApiEndpoint = 'https://api.chucknorris.io/jokes/random';
 
 
 
@@ -24,18 +25,41 @@ const writeInFile = function (filename, data) {
 };
 
 const addQuoteIfNotContainedAlready = function (quote) {
-    const existingData = readFile(filename)
-    if (!quote || existingData.some(q => q == quote)) return false
+    const existingQuotes = readFile(jsonFileName);
+    if (!quote || existingQuotes.some(q => q == quote)) return false
     writeInFile(jsonFileName, quote)
     return true
 }
+
+const getARandomNorrisQuote = async function () {
+    try {
+        const response = await fetch(chuckApiEndpoint)
+        const data = await response.json()
+        return data.value
+    } catch (err) {
+        console.error(err)
+        return false
+    }
+}
+
+const getUniqueQuote = async function () {
+    let quote;
+    let isNewQuote = false;
+
+    while (!isNewQuote) {
+        quote = await getARandomNorrisQuote();
+        if (!quote) {
+            return false;
+        }
+        isNewQuote = addQuoteIfNotContainedAlready(quote);
+    }
+
+    return quote;
+};
 
 console.log(readFile(jsonFileName))
 
 
 module.exports = {
-    writeInFile,
-    readFile,
-    jsonFileName,
-    addQuoteIfNotContainedAlready
+    getUniqueQuote
 };
