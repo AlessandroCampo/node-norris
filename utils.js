@@ -23,11 +23,19 @@ const writeInFile = function (filename, data) {
     fs.writeFileSync(filePath, stringifiedData);
 };
 
+const addQuoteIfNotContainedAlready = function (quote) {
+    const existingData = readFile(filename)
+    if (!quote || existingData.some(q => q == quote)) return false
+    writeInFile(jsonFileName, quote)
+    return true
+}
+
 console.log(readFile(jsonFileName))
 
 
 module.exports = {
     writeInFile,
     readFile,
-    jsonFileName
+    jsonFileName,
+    addQuoteIfNotContainedAlready
 };

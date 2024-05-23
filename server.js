@@ -8,6 +8,7 @@ const chuckApiEndpoint = 'https://api.chucknorris.io/jokes/random';
 
 const server = http.createServer(async (req, res) => {
     let quote
+    const existingQuotes = utils.readFile(utils.jsonFileName);
     try {
         const response = await fetch(chuckApiEndpoint)
         const data = await response.json()
@@ -18,8 +19,13 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(200, {
         'Content-Type': 'text-html'
     })
-    if (quote) utils.writeInFile(utils.jsonFileName, quote)
-    res.end(quote)
+    if (quote) {
+        utils.addQuoteIfNotContainedAlready(quote)
+        res.end(quote)
+    } else {
+        res.end()
+    }
+
 })
 
 
