@@ -1,7 +1,9 @@
+const utils = require('./utils.js');
+
 const http = require('http');
-const port = process.env.PORT || '8081'
-const host = process.env.HOST || 'localhost'
-const chuckApiEndpoint = 'https://api.chucknorris.io/jokes/random'
+const port = process.env.PORT || '8081';
+const host = process.env.HOST || 'localhost';
+const chuckApiEndpoint = 'https://api.chucknorris.io/jokes/random';
 
 
 const server = http.createServer(async (req, res) => {
@@ -16,6 +18,7 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(200, {
         'Content-Type': 'text-html'
     })
+    if (quote) utils.writeInFile(utils.jsonFileName, quote)
     res.end(quote)
 })
 
