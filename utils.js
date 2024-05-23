@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const jsonFileName = 'norrisDb.json';
+const htmlPagePath = path.join(__dirname, 'frontend', 'index.html')
 const chuckApiEndpoint = 'https://api.chucknorris.io/jokes/random';
 
 
@@ -15,6 +16,14 @@ const readFile = function (filename) {
     return JSON.parse(fileData)
 }
 
+const getFile = function (filePath) {
+    const fileData = fs.readFileSync(filePath, 'utf8')
+    return fileData
+}
+
+const appendContentToHTMLPage = function (content) {
+    fs.appendFileSync(htmlPagePath, `<p>${content}</p>`)
+}
 
 const writeInFile = function (filename, data) {
     const filePath = getPath(filename);
@@ -42,24 +51,25 @@ const getARandomNorrisQuote = async function () {
     }
 }
 
+//che è una funziona recorsiva?
+
 const getUniqueQuote = async function () {
-    let quote;
-    let isNewQuote = false;
-
-    while (!isNewQuote) {
-        quote = await getARandomNorrisQuote();
-        if (!quote) {
-            return false;
-        }
-        isNewQuote = addQuoteIfNotContainedAlready(quote);
+    const quote = await getARandomNorrisQuote();
+    if (!quote) {
+        return false;
     }
-
-    return quote;
+    if (addQuoteIfNotContainedAlready(quote)) {
+        return quote;
+    } else {
+        return getUniqueQuote();
+    }
 };
 
-console.log(readFile(jsonFileName))
 
 
 module.exports = {
-    getUniqueQuote
+    getUniqueQuote,
+    htmlPagePath,
+    getFile,
+    appendContentToHTMLPage
 };
